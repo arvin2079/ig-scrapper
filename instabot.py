@@ -62,7 +62,7 @@ def generate_token_instagram_format(cookies: dict):
 
 def authenticate_username_password(username: str, password: str):
     shared_data = extract_shared_data('/data/shared_data/')
-    csrftoken = shared_data['config']['csrf_token']
+    csrftoken = shared_data.get('config').get('csrf_token')
 
     timestamp = int(datetime.now().timestamp())
     payload = {
@@ -81,7 +81,7 @@ def authenticate_username_password(username: str, password: str):
 
         json_response = json.loads(r.text)
         if 'errors' in json_response.keys():
-            return json_response['errors']['error'][0]
+            return next(iter(json_response.get('errors').get('error')), None)
         if "message" in json_response.keys() and json_response['message'] == 'checkpoint_required':
             return 'challenge action requiered!'
         if "authenticated" in json_response.keys() and json_response['authenticated'] == True:
@@ -95,13 +95,13 @@ def authenticate_username_password(username: str, password: str):
 def _parse_media(media: dict):
     media = media['media']
     return {
-        'pk': media['pk'],
-        'taken_at': media['taken_at'],
-        'comment_likes_enabled': media['comment_likes_enabled'],
-        'comments_no': media['comment_count'],
-        'like_count': media['like_count'],
-        'caption': media['caption']['text'] if media and media['caption'] else 'NONE',
-        'user': media['user']['username'],
+        'pk': media.get('pk'),
+        'taken_at': media.get('taken_at'),
+        'comment_likes_enabled': media.get('comment_likes_enabled'),
+        'comments_no': media.get('comment_count'),
+        'like_count': media.get('like_count'),
+        'caption': media.get('caption').get('text'),
+        'user': media.get('user').get('username'),
     }
 
 
